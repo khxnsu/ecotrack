@@ -150,8 +150,11 @@ def stripe_webhook(request):
 
 def pricing(request):
     """Display pricing plans"""
+    # Get all active plans
+    plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+    
     # Create default plans if none exist
-    if not SubscriptionPlan.objects.exists():
+    if not plans.exists():
         default_plans = [
             {
                 'name': 'Community',
@@ -192,27 +195,30 @@ def pricing(request):
         ]
         
         for plan_data in default_plans:
-            SubscriptionPlan.objects.create(
+            plan = SubscriptionPlan.objects.create(
                 name=plan_data['name'],
                 price=plan_data['price'],
                 billing_cycle=plan_data['billing_cycle'],
                 features=plan_data['features'],
                 is_active=True
             )
-    
-    plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+        
+        # Get the newly created plans
+        plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
     
     # Convert features text to list for each plan
     for plan in plans:
         # Split features by newline and clean up
-        plan.feature_list = [
-            feature.strip('- ').strip() 
-            for feature in plan.features.strip().split('\n') 
-            if feature.strip()
-        ]
+        features = []
+        for feature in plan.features.strip().split('\n'):
+            feature = feature.strip('- ').strip()
+            if feature:  # Only add non-empty features
+                features.append(feature)
+        plan.feature_list = features
     
     context = {
         'plans': plans,
         'stripe_publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
     }
+    
     return render(request, 'main_app/pricing.html', context)
