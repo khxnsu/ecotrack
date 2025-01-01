@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .utils import create_stripe_checkout_session, handle_subscription_created, handle_subscription_deleted
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
 
 def home(request):
     return render(request, 'main_app/home.html')
@@ -134,7 +134,7 @@ def stripe_webhook(request):
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            payload, sig_header, getattr(settings, 'STRIPE_WEBHOOK_SECRET', '')
         )
     except ValueError as e:
         return HttpResponse(status=400)
@@ -149,8 +149,10 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 def pricing(request):
+    """Display pricing plans"""
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
-    return render(request, 'main_app/pricing.html', {
+    context = {
         'plans': plans,
-        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY
-    })
+        'stripe_publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
+    }
+    return render(request, 'main_app/pricing.html', context)

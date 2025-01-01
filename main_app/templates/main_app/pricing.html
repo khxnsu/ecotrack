@@ -7,134 +7,65 @@
 
 {% block content %}
 <div class="container py-5">
-    <h1 class="text-center mb-5">Choose Your Plan</h1>
-    
-    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
-        <!-- Free Tier -->
-        <div class="col">
-            <div class="card mb-4 rounded-3 shadow-sm">
-                <div class="card-header py-3">
-                    <h4 class="my-0 fw-normal">Community</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">$0<small class="text-muted fw-light">/mo</small></h1>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>Basic activity tracking</li>
-                        <li>Simple goal setting</li>
-                        <li>Community support</li>
-                        <li>Basic reporting</li>
-                    </ul>
-                    {% if not user.is_authenticated %}
-                        <a href="{% url 'login' %}" class="w-100 btn btn-lg btn-outline-success">Sign up for free</a>
-                    {% else %}
-                        <button type="button" class="w-100 btn btn-lg btn-outline-success disabled">Current Plan</button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Professional Tier -->
-        <div class="col">
-            <div class="card mb-4 rounded-3 shadow-sm">
-                <div class="card-header py-3">
-                    <h4 class="my-0 fw-normal">Professional</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">$29<small class="text-muted fw-light">/mo</small></h1>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>Advanced activity tracking</li>
-                        <li>Detailed goal analytics</li>
-                        <li>Priority support</li>
-                        <li>Custom reporting</li>
-                        <li>Team collaboration</li>
-                    </ul>
-                    {% if user.is_authenticated %}
-                        <button type="button" class="w-100 btn btn-lg btn-success checkout-button" data-plan-id="2">
-                            Get started
-                        </button>
-                    {% else %}
-                        <a href="{% url 'login' %}?next={% url 'main_app:pricing' %}" class="w-100 btn btn-lg btn-success">
-                            Sign in to subscribe
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Enterprise Tier -->
-        <div class="col">
-            <div class="card mb-4 rounded-3 shadow-sm border-success">
-                <div class="card-header py-3 text-white bg-success border-success">
-                    <h4 class="my-0 fw-normal">Enterprise</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">$99<small class="text-muted fw-light">/mo</small></h1>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>All Professional features</li>
-                        <li>Enterprise-grade support</li>
-                        <li>Custom integrations</li>
-                        <li>Advanced analytics</li>
-                        <li>Dedicated account manager</li>
-                        <li>Custom branding</li>
-                    </ul>
-                    {% if user.is_authenticated %}
-                        <button type="button" class="w-100 btn btn-lg btn-success checkout-button" data-plan-id="3">
-                            Contact sales
-                        </button>
-                    {% else %}
-                        <a href="{% url 'login' %}?next={% url 'main_app:pricing' %}" class="w-100 btn btn-lg btn-success">
-                            Sign in to subscribe
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Choose Your Plan</h1>
+        <p class="lead text-muted">Select the perfect plan for your environmental journey</p>
     </div>
-    
-    <div class="row mt-5">
-        <div class="col-12">
-            <h2 class="text-center mb-4">Compare Plans</h2>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width: 34%">Feature</th>
-                            <th style="width: 22%">Community</th>
-                            <th style="width: 22%">Professional</th>
-                            <th style="width: 22%">Enterprise</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Activity Tracking</th>
-                            <td>Basic</td>
-                            <td>Advanced</td>
-                            <td>Custom</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Goal Setting</th>
-                            <td>Up to 5</td>
-                            <td>Unlimited</td>
-                            <td>Unlimited + Templates</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Reports</th>
-                            <td>Basic</td>
-                            <td>Advanced</td>
-                            <td>Custom + API</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Support</th>
-                            <td>Community</td>
-                            <td>Priority</td>
-                            <td>24/7 Dedicated</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        {% for plan in plans %}
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm {% if plan.name == 'Enterprise' %}border-success{% endif %}">
+                <div class="card-header py-3 {% if plan.name == 'Enterprise' %}text-white bg-success border-success{% endif %}">
+                    <h4 class="my-0 fw-normal">{{ plan.name }}</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">${{ plan.price }}<small class="text-muted fw-light">/mo</small></h1>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        {% for feature in plan.feature_list %}
+                            <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% if user.is_authenticated %}
+                        {% if plan.name == 'Community' %}
+                            {% if user.subscription and user.subscription.plan == plan and user.subscription.is_active %}
+                                <button type="button" class="w-100 btn btn-lg btn-outline-success disabled">Current Plan</button>
+                            {% else %}
+                                <form action="{% url 'main_app:create_checkout_session' plan.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="w-100 btn btn-lg btn-outline-success">Switch to Free</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            {% if stripe_publishable_key %}
+                                {% if user.subscription and user.subscription.plan == plan and user.subscription.is_active %}
+                                    <button type="button" class="w-100 btn btn-lg btn-success disabled">Current Plan</button>
+                                {% else %}
+                                    <form action="{% url 'main_app:create_checkout_session' plan.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="w-100 btn btn-lg btn-success">
+                                            {% if plan.name == 'Enterprise' %}Contact Sales{% else %}Subscribe Now{% endif %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    Subscription management is currently unavailable. Please try again later.
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'main_app:pricing' %}" class="w-100 btn btn-lg {% if plan.name == 'Community' %}btn-outline-success{% else %}btn-success{% endif %}">
+                            Sign in to subscribe
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
 </div>
+{% endblock %}
 
 {% block extra_js %}
 <script>

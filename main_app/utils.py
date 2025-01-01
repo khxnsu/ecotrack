@@ -3,10 +3,13 @@ from django.conf import settings
 from django.urls import reverse
 from datetime import datetime, timedelta
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
 
 def create_stripe_checkout_session(request, plan):
     """Create a Stripe Checkout Session for subscription"""
+    if not stripe.api_key:
+        raise ValueError("Stripe API key not configured")
+
     success_url = request.build_absolute_uri(
         reverse('main_app:subscription_success')
     )
@@ -50,6 +53,9 @@ def create_stripe_checkout_session(request, plan):
 
 def handle_subscription_created(event):
     """Handle the subscription.created webhook event"""
+    if not stripe.api_key:
+        return
+        
     subscription = event.data.object
     user_id = int(subscription.client_reference_id)
     
@@ -76,6 +82,9 @@ def handle_subscription_created(event):
 
 def handle_subscription_deleted(event):
     """Handle the subscription.deleted webhook event"""
+    if not stripe.api_key:
+        return
+        
     subscription = event.data.object
     
     from .models import UserSubscription
