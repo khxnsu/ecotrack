@@ -3,7 +3,7 @@
 
 {% block extra_head %}
 <script src="https://js.stripe.com/v3/"></script>
-{% endblock %}
+{% endblock extra_head %}
 
 {% block content %}
 <div class="container py-5">
@@ -65,7 +65,7 @@
         {% endfor %}
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block extra_js %}
 <script>
@@ -105,4 +105,4 @@
         });
     });
 </script>
-{% endblock %}
+{% endblock extra_js %}
