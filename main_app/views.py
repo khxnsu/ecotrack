@@ -5,6 +5,14 @@ from django.db.models import Sum
 from django.utils import timezone
 from .models import EcoActivity, SustainabilityGoal, SubscriptionPlan
 from .forms import EcoActivityForm, SustainabilityGoalForm, UserRegistrationForm
+import stripe
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .utils import create_stripe_checkout_session, handle_subscription_created, handle_subscription_deleted
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def home(request):
     return render(request, 'main_app/home.html')
@@ -81,6 +89,64 @@ def add_goal(request):
         form = SustainabilityGoalForm()
     
     return render(request, 'main_app/goal_form.html', {'form': form})
+
+@login_required
+def create_checkout_session(request, plan_id):
+    """Create a Stripe Checkout Session for subscription"""
+    try:
+        plan = SubscriptionPlan.objects.get(id=plan_id, is_active=True)
+        checkout_session = create_stripe_checkout_session(request, plan)
+        return JsonResponse({'sessionId': checkout_session.id})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+def subscription_success(request):
+    """Handle successful subscription"""
+    session_id = request.GET.get('session_id')
+    if session_id:
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+            return render(request, 'main_app/subscription_success.html', {
+                'subscription': session
+            })
+        except Exception as e:
+            messages.error(request, f"Error processing subscription: {str(e)}")
+    return redirect('main_app:pricing')
+
+@login_required
+def cancel_subscription(request):
+    """Cancel user's subscription"""
+    if request.method == 'POST':
+        try:
+            subscription = request.user.usersubscription
+            subscription.cancel()
+            messages.success(request, "Your subscription has been cancelled.")
+        except Exception as e:
+            messages.error(request, f"Error cancelling subscription: {str(e)}")
+    return redirect('main_app:dashboard')
+
+@csrf_exempt
+def stripe_webhook(request):
+    """Handle Stripe webhooks"""
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponse(status=400)
+
+    if event.type == 'customer.subscription.created':
+        handle_subscription_created(event)
+    elif event.type == 'customer.subscription.deleted':
+        handle_subscription_deleted(event)
+
+    return HttpResponse(status=200)
 
 def pricing(request):
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')

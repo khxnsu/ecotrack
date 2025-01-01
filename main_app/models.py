@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.urls import reverse
 from django.core.validators import MinValueValidator
+import stripe
 
 class EcoActivity(models.Model):
     CATEGORY_CHOICES = [
@@ -162,6 +163,8 @@ class SubscriptionPlan(models.Model):
     features = models.TextField()
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    stripe_price_id = models.CharField(max_length=100, blank=True, null=True)
+    stripe_product_id = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} (${self.price}/{self.billing_cycle})"
@@ -173,6 +176,8 @@ class UserSubscription(models.Model):
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)
     last_payment_date = models.DateTimeField(auto_now_add=True)
+    stripe_subscription_id = models.CharField(max_length=100, blank=True, null=True)
+    stripe_customer_id = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}'s {self.plan.name} Subscription"
@@ -180,3 +185,13 @@ class UserSubscription(models.Model):
     @property
     def is_valid(self):
         return self.is_active and self.end_date > timezone.now()
+
+    def cancel(self):
+        """Cancel the subscription"""
+        if self.stripe_subscription_id:
+            try:
+                stripe.Subscription.delete(self.stripe_subscription_id)
+            except stripe.error.StripeError:
+                pass
+        self.is_active = False
+        self.save()

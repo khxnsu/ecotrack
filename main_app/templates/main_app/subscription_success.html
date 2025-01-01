@@ -1,0 +1,26 @@
+{% extends 'main_app/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="display-4 text-success mb-4">
+                        <i class="fas fa-check-circle"></i>
+                    </h1>
+                    <h2 class="card-title mb-4">Thank You!</h2>
+                    <p class="card-text">Your subscription has been successfully processed.</p>
+                    <p class="card-text text-muted mb-4">You now have access to all the features included in your plan.</p>
+                    
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a href="{% url 'main_app:dashboard' %}" class="btn btn-success">
+                            Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
