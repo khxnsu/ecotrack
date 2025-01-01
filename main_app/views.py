@@ -151,6 +151,16 @@ def stripe_webhook(request):
 def pricing(request):
     """Display pricing plans"""
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+    
+    # Convert features text to list for each plan
+    for plan in plans:
+        # Split features by newline and clean up
+        plan.feature_list = [
+            feature.strip('- ').strip() 
+            for feature in plan.features.strip().split('\n') 
+            if feature.strip()
+        ]
+    
     context = {
         'plans': plans,
         'stripe_publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
