@@ -47,7 +47,7 @@
                             {% if user.subscription and user.subscription.plan == plan and user.subscription.is_active %}
                                 <button type="button" class="w-100 btn btn-lg btn-outline-success disabled">Current Plan</button>
                             {% else %}
-                                <form action="{% url 'main_app:create_checkout_session' plan.id %}" method="POST">
+                                <form action="{% url 'main_app:create_checkout_session' plan.id %}" method="POST" class="checkout-form">
                                     {% csrf_token %}
                                     <button type="submit" class="w-100 btn btn-lg btn-outline-success">Switch to Free</button>
                                 </form>
@@ -57,7 +57,7 @@
                                 {% if user.subscription and user.subscription.plan == plan and user.subscription.is_active %}
                                     <button type="button" class="w-100 btn btn-lg btn-success disabled">Current Plan</button>
                                 {% else %}
-                                    <form action="{% url 'main_app:create_checkout_session' plan.id %}" method="POST">
+                                    <form action="{% url 'main_app:create_checkout_session' plan.id %}" method="POST" class="checkout-form">
                                         {% csrf_token %}
                                         <button type="submit" class="w-100 btn btn-lg btn-success">
                                             {% if plan.name == 'Enterprise' %}Contact Sales{% else %}Subscribe Now{% endif %}
@@ -94,19 +94,37 @@
     // Initialize Stripe
     const stripe = Stripe('{{ stripe_publishable_key }}');
     
-    // Handle checkout button clicks
-    document.querySelectorAll('.checkout-button').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            const planId = e.target.dataset.planId;
+    // Handle checkout form submissions
+    document.querySelectorAll('.checkout-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get the submit button
+            const button = form.querySelector('button[type="submit"]');
+            const planId = form.action.split('/').slice(-2)[0];
             
             try {
                 // Disable the button and show loading state
-                e.target.disabled = true;
-                e.target.innerHTML = 'Processing...';
+                button.disabled = true;
+                button.innerHTML = 'Processing...';
                 
                 // Create checkout session
-                const response = await fetch(`/checkout/session/${planId}/`);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
                 const session = await response.json();
+                
+                if (session.error) {
+                    throw new Error(session.error);
+                }
                 
                 // Redirect to Stripe Checkout
                 const result = await stripe.redirectToCheckout({
@@ -114,17 +132,21 @@
                 });
                 
                 if (result.error) {
-                    alert(result.error.message);
+                    throw new Error(result.error.message);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                alert('An error occurred: ' + error.message);
             } finally {
                 // Re-enable the button and restore text
-                e.target.disabled = false;
-                e.target.innerHTML = 'Get started';
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || 'Subscribe Now';
             }
         });
+        
+        // Store original button text
+        const button = form.querySelector('button[type="submit"]');
+        button.dataset.originalText = button.innerHTML;
     });
 </script>
 {% endblock extra_js %}
