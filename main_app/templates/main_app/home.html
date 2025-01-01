@@ -1,53 +1,155 @@
 {% extends 'main_app/base.html' %}
-
-{% block title %}Welcome{% endblock %}
+{% load static %}
 
 {% block content %}
-<div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-4 fw-bold text-success">Track Your Environmental Impact</h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">
-            Monitor your daily activities, set sustainability goals, and make a positive impact on the environment.
-        </p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            {% if user.is_authenticated %}
-                <a href="{% url 'main_app:dashboard' %}" class="btn btn-success btn-lg px-4 gap-3">Go to Dashboard</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn btn-success btn-lg px-4 gap-3">Get Started</a>
-                <a href="{% url 'register' %}" class="btn btn-outline-success btn-lg px-4">Register</a>
-            {% endif %}
+<!-- Hero Section -->
+<div class="container-fluid hero-section text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Track Your Environmental Impact</h1>
+                <p class="lead mb-4">Join EcoTrack to monitor and improve your environmental footprint. Make a difference for our planet, one action at a time.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'main_app:dashboard' %}" class="btn btn-success btn-lg px-4 me-md-2">Go to Dashboard</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-success btn-lg px-4 me-md-2">Get Started</a>
+                        <a href="{% url 'main_app:pricing' %}" class="btn btn-outline-light btn-lg px-4">View Plans</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="{% static 'main_app/images/hero-image.jpg' %}" alt="Environmental Impact" class="img-fluid rounded-3 shadow">
+            </div>
         </div>
     </div>
 </div>
 
-<div class="container">
+<!-- Features Section -->
+<div class="container py-5">
     <div class="row g-4 py-5">
         <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-graph-up-arrow text-success fs-1"></i>
-                    <h3 class="card-title">Track Progress</h3>
-                    <p class="card-text">Monitor your environmental impact with easy-to-use tracking tools.</p>
+            <div class="feature-icon bg-success bg-gradient">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h3>Track Activities</h3>
+            <p>Record and monitor your daily environmental activities and see their impact over time.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-icon bg-success bg-gradient">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Set Goals</h3>
+            <p>Set personal environmental goals and track your progress towards achieving them.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-icon bg-success bg-gradient">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>Join Community</h3>
+            <p>Connect with like-minded individuals and share your environmental journey.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="container-fluid bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold">Choose Your Plan</h2>
+            <p class="lead text-muted">Select the perfect plan for your environmental journey</p>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+            <!-- Free Tier -->
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">Community</h4>
+                    </div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">$0<small class="text-muted fw-light">/mo</small></h1>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>Basic activity tracking</li>
+                            <li>Simple goal setting</li>
+                            <li>Community support</li>
+                            <li>Basic reporting</li>
+                        </ul>
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'login' %}" class="w-100 btn btn-lg btn-outline-success">Sign up for free</a>
+                        {% else %}
+                            <button type="button" class="w-100 btn btn-lg btn-outline-success disabled">Current Plan</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Professional Tier -->
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal">Professional</h4>
+                    </div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">$29<small class="text-muted fw-light">/mo</small></h1>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>Advanced activity tracking</li>
+                            <li>Detailed goal analytics</li>
+                            <li>Priority support</li>
+                            <li>Custom reporting</li>
+                            <li>Team collaboration</li>
+                        </ul>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'main_app:pricing' %}" class="w-100 btn btn-lg btn-success">Upgrade Now</a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={% url 'main_app:pricing' %}" class="w-100 btn btn-lg btn-success">
+                                Sign in to subscribe
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enterprise Tier -->
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm border-success">
+                    <div class="card-header py-3 text-white bg-success border-success">
+                        <h4 class="my-0 fw-normal">Enterprise</h4>
+                    </div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">$99<small class="text-muted fw-light">/mo</small></h1>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>All Professional features</li>
+                            <li>Enterprise-grade support</li>
+                            <li>Custom integrations</li>
+                            <li>Advanced analytics</li>
+                            <li>Dedicated account manager</li>
+                            <li>Custom branding</li>
+                        </ul>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'main_app:pricing' %}" class="w-100 btn btn-lg btn-success">Contact Sales</a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={% url 'main_app:pricing' %}" class="w-100 btn btn-lg btn-success">
+                                Sign in to subscribe
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-trophy text-success fs-1"></i>
-                    <h3 class="card-title">Set Goals</h3>
-                    <p class="card-text">Set personal sustainability goals and track your progress towards them.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-lightbulb text-success fs-1"></i>
-                    <h3 class="card-title">Get Insights</h3>
-                    <p class="card-text">Receive personalized recommendations to improve your environmental impact.</p>
-                </div>
-            </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+            <h2 class="fw-bold mb-4">Ready to Make a Difference?</h2>
+            <p class="lead mb-4">Join thousands of others who are already tracking and improving their environmental impact with EcoTrack.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'main_app:dashboard' %}" class="btn btn-success btn-lg">Go to Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-success btn-lg">Get Started Today</a>
+            {% endif %}
         </div>
     </div>
 </div>

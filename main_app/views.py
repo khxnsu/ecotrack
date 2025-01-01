@@ -150,4 +150,7 @@ def stripe_webhook(request):
 
 def pricing(request):
     plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
-    return render(request, 'main_app/pricing.html', {'plans': plans})
+    return render(request, 'main_app/pricing.html', {
+        'plans': plans,
+        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY
+    })
