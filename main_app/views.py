@@ -150,75 +150,94 @@ def stripe_webhook(request):
 
 def pricing(request):
     """Display pricing plans"""
-    # Get all active plans
-    plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
-    
-    # Create default plans if none exist
-    if not plans.exists():
-        default_plans = [
-            {
-                'name': 'Community',
-                'price': 0.00,
-                'billing_cycle': 'monthly',
-                'features': '''
-                    - Basic activity tracking
-                    - Simple goal setting
-                    - Community support
-                    - Basic reporting
-                '''
-            },
-            {
-                'name': 'Professional',
-                'price': 29.00,
-                'billing_cycle': 'monthly',
-                'features': '''
-                    - Advanced activity tracking
-                    - Detailed goal analytics
-                    - Priority support
-                    - Custom reporting
-                    - Team collaboration
-                '''
-            },
-            {
-                'name': 'Enterprise',
-                'price': 99.00,
-                'billing_cycle': 'monthly',
-                'features': '''
-                    - All Professional features
-                    - Enterprise-grade support
-                    - Custom integrations
-                    - Advanced analytics
-                    - Dedicated account manager
-                    - Custom branding
-                '''
-            }
-        ]
-        
-        for plan_data in default_plans:
-            plan = SubscriptionPlan.objects.create(
-                name=plan_data['name'],
-                price=plan_data['price'],
-                billing_cycle=plan_data['billing_cycle'],
-                features=plan_data['features'],
-                is_active=True
-            )
-        
-        # Get the newly created plans
+    try:
+        # Get all active plans
         plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+        
+        # Create default plans if none exist
+        if not plans.exists():
+            default_plans = [
+                {
+                    'name': 'Community',
+                    'price': 0.00,
+                    'billing_cycle': 'monthly',
+                    'features': '''
+                        - Basic activity tracking
+                        - Simple goal setting
+                        - Community support
+                        - Basic reporting
+                    '''
+                },
+                {
+                    'name': 'Professional',
+                    'price': 29.00,
+                    'billing_cycle': 'monthly',
+                    'features': '''
+                        - Advanced activity tracking
+                        - Detailed goal analytics
+                        - Priority support
+                        - Custom reporting
+                        - Team collaboration
+                    '''
+                },
+                {
+                    'name': 'Enterprise',
+                    'price': 99.00,
+                    'billing_cycle': 'monthly',
+                    'features': '''
+                        - All Professional features
+                        - Enterprise-grade support
+                        - Custom integrations
+                        - Advanced analytics
+                        - Dedicated account manager
+                        - Custom branding
+                    '''
+                }
+            ]
+            
+            try:
+                for plan_data in default_plans:
+                    plan = SubscriptionPlan.objects.create(
+                        name=plan_data['name'],
+                        price=plan_data['price'],
+                        billing_cycle=plan_data['billing_cycle'],
+                        features=plan_data['features'],
+                        is_active=True
+                    )
+                print("Successfully created default plans")
+            except Exception as e:
+                print(f"Error creating plans: {str(e)}")
+                # Re-raise the exception to be caught by the outer try-except
+                raise
+            
+            # Get the newly created plans
+            plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+        
+        # Convert features text to list for each plan
+        for plan in plans:
+            # Split features by newline and clean up
+            features = []
+            for feature in plan.features.strip().split('\n'):
+                feature = feature.strip('- ').strip()
+                if feature:  # Only add non-empty features
+                    features.append(feature)
+            plan.feature_list = features
+        
+        context = {
+            'plans': plans,
+            'stripe_publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
+        }
+        
+        print(f"Found {len(plans)} plans")
+        for plan in plans:
+            print(f"Plan: {plan.name}, Features: {plan.feature_list}")
+        
+        return render(request, 'main_app/pricing.html', context)
     
-    # Convert features text to list for each plan
-    for plan in plans:
-        # Split features by newline and clean up
-        features = []
-        for feature in plan.features.strip().split('\n'):
-            feature = feature.strip('- ').strip()
-            if feature:  # Only add non-empty features
-                features.append(feature)
-        plan.feature_list = features
-    
-    context = {
-        'plans': plans,
-        'stripe_publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
-    }
-    
-    return render(request, 'main_app/pricing.html', context)
+    except Exception as e:
+        print(f"Error in pricing view: {str(e)}")
+        # Return an error message to the user
+        return render(request, 'main_app/pricing.html', {
+            'plans': [],
+            'error_message': 'An error occurred while loading the pricing plans. Please try again later.'
+        })

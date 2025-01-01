@@ -1,11 +1,22 @@
 {% extends 'main_app/base.html' %}
 {% load static %}
 
+{% block title %}Pricing{% endblock %}
+
 {% block extra_head %}
 <script src="https://js.stripe.com/v3/"></script>
 {% endblock extra_head %}
 
 {% block content %}
+<!-- Debug info -->
+<div class="container">
+    {% if not plans %}
+        <div class="alert alert-warning">
+            No subscription plans are currently available.
+        </div>
+    {% endif %}
+</div>
+
 <div class="container py-5">
     <div class="text-center mb-5">
         <h1 class="display-4 fw-bold">Choose Your Plan</h1>
@@ -60,6 +71,12 @@
                         </a>
                     {% endif %}
                 </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No plans are currently available. Please try again later.
             </div>
         </div>
         {% endfor %}
