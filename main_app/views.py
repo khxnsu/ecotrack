@@ -152,10 +152,12 @@ def pricing(request):
     """Display pricing plans"""
     try:
         # Get all active plans
-        plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+        plans = list(SubscriptionPlan.objects.filter(is_active=True).order_by('price'))
+        print(f"Initial plans count: {len(plans)}")  # Debug print
         
         # Create default plans if none exist
-        if not plans.exists():
+        if not plans:
+            print("No plans found, creating defaults...")  # Debug print
             default_plans = [
                 {
                     'name': 'Community',
@@ -195,49 +197,51 @@ def pricing(request):
                 }
             ]
             
-            try:
-                for plan_data in default_plans:
-                    plan = SubscriptionPlan.objects.create(
-                        name=plan_data['name'],
-                        price=plan_data['price'],
-                        billing_cycle=plan_data['billing_cycle'],
-                        features=plan_data['features'],
-                        is_active=True
-                    )
-                print("Successfully created default plans")
-            except Exception as e:
-                print(f"Error creating plans: {str(e)}")
-                # Re-raise the exception to be caught by the outer try-except
-                raise
+            for plan_data in default_plans:
+                try:
+                    # Check if plan already exists
+                    plan = SubscriptionPlan.objects.filter(name=plan_data['name']).first()
+                    if not plan:
+                        print(f"Creating plan: {plan_data['name']}")  # Debug print
+                        plan = SubscriptionPlan.objects.create(
+                            name=plan_data['name'],
+                            price=plan_data['price'],
+                            billing_cycle=plan_data['billing_cycle'],
+                            features=plan_data['features'],
+                            is_active=True
+                        )
+                        print(f"Created plan: {plan.name}")  # Debug print
+                except Exception as e:
+                    print(f"Error creating plan {plan_data['name']}: {str(e)}")  # Debug print
             
-            # Get the newly created plans
-            plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+            # Get all plans again after creation
+            plans = list(SubscriptionPlan.objects.filter(is_active=True).order_by('price'))
+            print(f"Plans after creation: {len(plans)}")  # Debug print
         
         # Convert features text to list for each plan
         for plan in plans:
-            # Split features by newline and clean up
+            print(f"Processing plan: {plan.name}")  # Debug print
             features = []
             for feature in plan.features.strip().split('\n'):
                 feature = feature.strip('- ').strip()
                 if feature:  # Only add non-empty features
                     features.append(feature)
             plan.feature_list = features
+            print(f"Features for {plan.name}: {len(features)}")  # Debug print
         
         context = {
             'plans': plans,
             'stripe_publishable_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
         }
         
-        print(f"Found {len(plans)} plans")
-        for plan in plans:
-            print(f"Plan: {plan.name}, Features: {plan.feature_list}")
-        
         return render(request, 'main_app/pricing.html', context)
     
     except Exception as e:
-        print(f"Error in pricing view: {str(e)}")
+        print(f"Error in pricing view: {str(e)}")  # Debug print
+        import traceback
+        print(traceback.format_exc())  # Print full traceback
         # Return an error message to the user
         return render(request, 'main_app/pricing.html', {
             'plans': [],
-            'error_message': 'An error occurred while loading the pricing plans. Please try again later.'
+            'error_message': f'An error occurred while loading the pricing plans: {str(e)}'
         })
