@@ -96,22 +96,35 @@ A professional sustainability tracking platform built with Django that helps org
 git clone https://github.com/khxnsu/ecotrack.git
 ```
 
-2. Install dependencies:
+2. Set up environment variables:
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your settings
+# Make sure to update:
+# - DJANGO_SECRET_KEY
+# - DEBUG
+# - ALLOWED_HOSTS
+# - EMAIL settings (if using email features)
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Apply migrations:
+4. Apply migrations:
 ```bash
 python manage.py migrate
 ```
 
-4. Create a superuser:
+5. Create a superuser:
 ```bash
 python manage.py createsuperuser
 ```
 
-5. Run the development server:
+6. Run the development server:
 ```bash
 python manage.py runserver
 ```
