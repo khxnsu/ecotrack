@@ -1,0 +1,114 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5">Choose Your Plan</h1>
+    
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        <!-- Free Tier -->
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm">
+                <div class="card-header py-3">
+                    <h4 class="my-0 fw-normal">Community</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">$0<small class="text-muted fw-light">/mo</small></h1>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        <li>Basic activity tracking</li>
+                        <li>Simple goal setting</li>
+                        <li>Community support</li>
+                        <li>Basic reporting</li>
+                    </ul>
+                    <button type="button" class="w-100 btn btn-lg btn-outline-success">Sign up for free</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Professional Tier -->
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm">
+                <div class="card-header py-3">
+                    <h4 class="my-0 fw-normal">Professional</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">$29<small class="text-muted fw-light">/mo</small></h1>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        <li>Advanced activity tracking</li>
+                        <li>Detailed goal analytics</li>
+                        <li>Priority support</li>
+                        <li>Custom reporting</li>
+                        <li>Team collaboration</li>
+                    </ul>
+                    <button type="button" class="w-100 btn btn-lg btn-success">Get started</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enterprise Tier -->
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-success">
+                <div class="card-header py-3 text-white bg-success border-success">
+                    <h4 class="my-0 fw-normal">Enterprise</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">$99<small class="text-muted fw-light">/mo</small></h1>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        <li>All Professional features</li>
+                        <li>Enterprise-grade support</li>
+                        <li>Custom integrations</li>
+                        <li>Advanced analytics</li>
+                        <li>Dedicated account manager</li>
+                        <li>Custom branding</li>
+                    </ul>
+                    <button type="button" class="w-100 btn btn-lg btn-success">Contact sales</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Compare Plans</h2>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 34%">Feature</th>
+                            <th style="width: 22%">Community</th>
+                            <th style="width: 22%">Professional</th>
+                            <th style="width: 22%">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Activity Tracking</th>
+                            <td>Basic</td>
+                            <td>Advanced</td>
+                            <td>Custom</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Goal Setting</th>
+                            <td>Up to 5</td>
+                            <td>Unlimited</td>
+                            <td>Unlimited + Templates</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Reports</th>
+                            <td>Basic</td>
+                            <td>Advanced</td>
+                            <td>Custom + API</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Support</th>
+                            <td>Community</td>
+                            <td>Priority</td>
+                            <td>24/7 Dedicated</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

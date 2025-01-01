@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import EcoActivity, SustainabilityGoal
+from .models import EcoActivity, SustainabilityGoal, SubscriptionPlan, UserSubscription
 
 # Custom actions for User admin
 def deactivate_users(modeladmin, request, queryset):
@@ -168,6 +168,19 @@ class SustainabilityGoalAdmin(admin.ModelAdmin):
         # TODO: Implement reminder sending logic
         self.message_user(request, "Reminders have been queued for sending.")
     send_reminders.short_description = "Send reminders for selected goals"
+
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'billing_cycle', 'is_active', 'created_at')
+    list_filter = ('billing_cycle', 'is_active')
+    search_fields = ('name',)
+
+@admin.register(UserSubscription)
+class UserSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'plan', 'start_date', 'end_date', 'is_active', 'is_valid')
+    list_filter = ('is_active', 'plan')
+    search_fields = ('user__username', 'user__email')
+    raw_id_fields = ('user',)
 
 # Unregister the default User admin and register our custom one
 admin.site.unregister(User)

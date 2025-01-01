@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
 from django.utils import timezone
-from .models import EcoActivity, SustainabilityGoal
+from .models import EcoActivity, SustainabilityGoal, SubscriptionPlan
 from .forms import EcoActivityForm, SustainabilityGoalForm, UserRegistrationForm
 
 def home(request):
@@ -81,3 +81,7 @@ def add_goal(request):
         form = SustainabilityGoalForm()
     
     return render(request, 'main_app/goal_form.html', {'form': form})
+
+def pricing(request):
+    plans = SubscriptionPlan.objects.filter(is_active=True).order_by('price')
+    return render(request, 'main_app/pricing.html', {'plans': plans})
