@@ -1,0 +1,54 @@
+{% extends 'main_app/base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-4 fw-bold text-success">Track Your Environmental Impact</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">
+            Monitor your daily activities, set sustainability goals, and make a positive impact on the environment.
+        </p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            {% if user.is_authenticated %}
+                <a href="{% url 'main_app:dashboard' %}" class="btn btn-success btn-lg px-4 gap-3">Go to Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-success btn-lg px-4 gap-3">Get Started</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-success btn-lg px-4">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4 py-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up-arrow text-success fs-1"></i>
+                    <h3 class="card-title">Track Progress</h3>
+                    <p class="card-text">Monitor your environmental impact with easy-to-use tracking tools.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-trophy text-success fs-1"></i>
+                    <h3 class="card-title">Set Goals</h3>
+                    <p class="card-text">Set personal sustainability goals and track your progress towards them.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-lightbulb text-success fs-1"></i>
+                    <h3 class="card-title">Get Insights</h3>
+                    <p class="card-text">Receive personalized recommendations to improve your environmental impact.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

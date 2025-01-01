@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTrack - {% block title %}{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        :root {
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #212529;
+            --bs-body-color: #f8f9fa;
+            --bs-secondary-bg: #343a40;
+            --bs-tertiary-bg: #495057;
+            --bs-border-color: #495057;
+            --bs-emphasis-color: #fff;
+            --bs-emphasis-color-rgb: 255, 255, 255;
+            --bs-secondary-color: #a7acb1;
+            --bs-primary: #0dcaf0;
+            --bs-secondary: #6c757d;
+            --bs-success: #198754;
+            --bs-info: #0dcaf0;
+            --bs-warning: #ffc107;
+            --bs-danger: #dc3545;
+            --bs-light: #f8f9fa;
+            --bs-dark: #212529;
+        }
+
+        [data-bs-theme="dark"] h1,
+        [data-bs-theme="dark"] h2,
+        [data-bs-theme="dark"] h3,
+        [data-bs-theme="dark"] h4,
+        [data-bs-theme="dark"] h5,
+        [data-bs-theme="dark"] h6,
+        [data-bs-theme="dark"] .h1,
+        [data-bs-theme="dark"] .h2,
+        [data-bs-theme="dark"] .h3,
+        [data-bs-theme="dark"] .h4,
+        [data-bs-theme="dark"] .h5,
+        [data-bs-theme="dark"] .h6 {
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            background-color: var(--bs-tertiary-bg);
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+
+        [data-bs-theme="dark"] .card-title {
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .text-muted {
+            color: var(--bs-secondary-color) !important;
+        }
+
+        [data-bs-theme="dark"] .navbar {
+            background-color: var(--bs-tertiary-bg) !important;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: var(--bs-secondary-bg);
+            border-color: var(--bs-border-color);
+        }
+
+        [data-bs-theme="dark"] .list-group-item {
+            background-color: var(--bs-secondary-bg);
+            border-color: var(--bs-border-color);
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .modal-content {
+            background-color: var(--bs-secondary-bg);
+            border-color: var(--bs-border-color);
+        }
+
+        [data-bs-theme="dark"] .dropdown-menu {
+            background-color: var(--bs-secondary-bg);
+            border-color: var(--bs-border-color);
+        }
+
+        [data-bs-theme="dark"] .dropdown-item {
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background-color: var(--bs-tertiary-bg);
+        }
+
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: var(--bs-tertiary-bg);
+            border-color: var(--bs-border-color);
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus {
+            background-color: var(--bs-tertiary-bg);
+            border-color: var(--bs-primary);
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .input-group-text {
+            background-color: var(--bs-tertiary-bg);
+            border-color: var(--bs-border-color);
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .table {
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="dark"] .table thead th {
+            border-color: var(--bs-border-color);
+        }
+
+        [data-bs-theme="dark"] .theme-toggle {
+            background-color: var(--bs-tertiary-bg);
+            color: var(--bs-emphasis-color);
+        }
+
+        [data-bs-theme="light"] .theme-toggle {
+            background-color: var(--bs-light);
+            color: var(--bs-dark);
+        }
+
+        [data-bs-theme="dark"] footer {
+            background-color: var(--bs-secondary-bg) !important;
+            color: var(--bs-emphasis-color);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .fade-transition {
+            transition: all var(--transition-speed) ease-in-out;
+        }
+
+        /* Progress bar styles */
+        [data-bs-theme="dark"] .progress {
+            background-color: var(--bs-tertiary-bg);
+        }
+
+        /* Alert styles */
+        [data-bs-theme="dark"] .alert {
+            background-color: var(--bs-secondary-bg);
+            border-color: var(--bs-border-color);
+        }
+
+        /* Badge styles */
+        [data-bs-theme="dark"] .badge {
+            color: var(--bs-emphasis-color);
+        }
+
+        /* Toast styles */
+        [data-bs-theme="dark"] .toast {
+            background-color: var(--bs-secondary-bg);
+            border-color: var(--bs-border-color);
+        }
+
+        /* Custom scrollbar for dark mode */
+        [data-bs-theme="dark"] ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        [data-bs-theme="dark"] ::-webkit-scrollbar-track {
+            background: var(--bs-secondary-bg);
+        }
+
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+            background-color: var(--bs-tertiary-bg);
+            border-radius: 6px;
+            border: 3px solid var(--bs-secondary-bg);
+        }
+
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--bs-border-color);
+        }
+
+        /* Fix for select dropdowns */
+        [data-bs-theme="dark"] select option {
+            background-color: var(--bs-secondary-bg);
+            color: var(--bs-emphasis-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'main_app:home' %}">
+                <i class="fas fa-leaf me-2"></i>EcoTrack
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main_app:dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main_app:add_activity' %}">Add Activity</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main_app:add_goal' %}">Set Goal</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="theme-toggle me-3" id="themeToggle">
+                        <i class="fas fa-sun" id="lightIcon"></i>
+                        <i class="fas fa-moon d-none" id="darkIcon"></i>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-light">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mb-4 fade-transition">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer class="bg-light py-3 mt-auto">
+        <div class="container text-center">
+            <p class="mb-0">&copy; {% now "Y" %} EcoTrack. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const lightIcon = document.getElementById('lightIcon');
+            const darkIcon = document.getElementById('darkIcon');
+            const html = document.documentElement;
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            html.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcons(savedTheme);
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = html.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                html.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons(newTheme);
+            });
+
+            function updateThemeIcons(theme) {
+                if (theme === 'dark') {
+                    lightIcon.classList.add('d-none');
+                    darkIcon.classList.remove('d-none');
+                } else {
+                    lightIcon.classList.remove('d-none');
+                    darkIcon.classList.add('d-none');
+                }
+            }
+
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+</html>
